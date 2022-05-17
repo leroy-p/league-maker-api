@@ -1,0 +1,21 @@
+schema:
+  - 'src/graphql/type-definitions.ts'
+generates:
+  src/graphql/schema.ts:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-graphql-request'
+    config:
+      namingConvention: keep
+      skipTypename: true
+      declarationKind:
+        type: 'interface'
+        input: 'interface'
+      maybeValue: T | null | undefined
+    hooks:
+      afterAllFileWrite:
+        - prettier --write
+overwrite: true
+require:
+  - ts-node/register
