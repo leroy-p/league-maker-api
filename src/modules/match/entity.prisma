@@ -1,0 +1,16 @@
+model MatchEntity {
+  id          Int           @id @default(autoincrement())
+  uuid        String        @unique @default(uuid()) @db.Uuid
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+  round       Int
+  score1      Int?
+  score2      Int?
+
+  player1     PlayerEntity  @relation("player_matches1", fields: [player1Uuid], references: [uuid])
+  player1Uuid String        @db.Uuid
+  player2     PlayerEntity  @relation("player_matches2", fields: [player2Uuid], references: [uuid])
+  player2Uuid String        @db.Uuid
+
+  @@map("match")
+}

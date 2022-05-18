@@ -21,11 +21,79 @@ export enum LanguageCode {
   fr = 'fr'
 }
 
+export interface Match {
+  createdAt: Scalars['Date'];
+  player1?: Maybe<Player>;
+  player2?: Maybe<Player>;
+  round: Scalars['Int'];
+  score1?: Maybe<Scalars['Int']>;
+  score2?: Maybe<Scalars['Int']>;
+  updatedAt: Scalars['Date'];
+  uuid: Scalars['String'];
+}
+
+export interface MatchCreateInput {
+  player1Uuid: Scalars['String'];
+  player2Uuid: Scalars['String'];
+  round: Scalars['Int'];
+}
+
+export interface MatchDeleteInput {
+  uuid: Scalars['String'];
+}
+
+export interface MatchFindManyInput {
+  order?: InputMaybe<MatchOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  take?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<MatchSearchFieldsInput>;
+}
+
+export interface MatchFindOneInput {
+  where?: InputMaybe<MatchSearchFieldsInput>;
+}
+
+export interface MatchOrderByInput {
+  round?: InputMaybe<OrderByEnum>;
+}
+
+export interface MatchSearchFieldsInput {
+  player1Uuid?: InputMaybe<Scalars['String']>;
+  player2Uuid?: InputMaybe<Scalars['String']>;
+  round?: InputMaybe<Scalars['Int']>;
+  uuid?: InputMaybe<Scalars['String']>;
+}
+
+export interface MatchUpdateInput {
+  score1: Scalars['Int'];
+  score2: Scalars['Int'];
+  uuid: Scalars['String'];
+}
+
 export interface Mutation {
+  matchCreateOne: Match;
+  matchDeleteOne: Scalars['Boolean'];
+  matchDraw: Scalars['Boolean'];
+  matchUpdateOne: Match;
   playerCreateOne: Player;
   playerDeleteOne: Scalars['Boolean'];
   playerUpdateOne: Player;
 }
+
+
+export type MutationmatchCreateOneArgs = {
+  createInput: MatchCreateInput;
+};
+
+
+export type MutationmatchDeleteOneArgs = {
+  deleteInput: MatchDeleteInput;
+};
+
+
+export type MutationmatchUpdateOneArgs = {
+  updateInput: MatchUpdateInput;
+};
 
 
 export type MutationplayerCreateOneArgs = {
@@ -48,8 +116,18 @@ export enum OrderByEnum {
 }
 
 export interface Player {
+  against: Scalars['Int'];
+  createdAt: Scalars['Date'];
+  for: Scalars['Int'];
+  lost: Scalars['Int'];
+  matches1?: Maybe<Array<Match>>;
+  matches2?: Maybe<Array<Match>>;
   name: Scalars['String'];
+  played: Scalars['Int'];
+  points: Scalars['Int'];
+  updatedAt: Scalars['Date'];
   uuid: Scalars['String'];
+  won: Scalars['Int'];
 }
 
 export interface PlayerCreateInput {
@@ -73,22 +151,43 @@ export interface PlayerFindOneInput {
 
 export interface PlayerOrderByInput {
   name?: InputMaybe<OrderByEnum>;
+  order?: InputMaybe<OrderByEnum>;
+  points?: InputMaybe<OrderByEnum>;
 }
 
 export interface PlayerSearchFieldsInput {
-  name?: InputMaybe<Scalars['String']>;
+  firstName?: InputMaybe<Scalars['String']>;
+  lastName?: InputMaybe<Scalars['String']>;
   uuid?: InputMaybe<Scalars['String']>;
 }
 
 export interface PlayerUpdateInput {
-  name?: InputMaybe<Scalars['String']>;
+  against?: InputMaybe<Scalars['Int']>;
+  for?: InputMaybe<Scalars['Int']>;
+  lost?: InputMaybe<Scalars['Int']>;
+  pic?: InputMaybe<Scalars['String']>;
+  played?: InputMaybe<Scalars['Int']>;
+  points?: InputMaybe<Scalars['Int']>;
   uuid: Scalars['String'];
+  won?: InputMaybe<Scalars['Int']>;
 }
 
 export interface Query {
+  matchFindMany: Array<Maybe<Match>>;
+  matchFindOne?: Maybe<Match>;
   playerFindMany: Array<Maybe<Player>>;
   playerFindOne?: Maybe<Player>;
 }
+
+
+export type QuerymatchFindManyArgs = {
+  findManyInput: MatchFindManyInput;
+};
+
+
+export type QuerymatchFindOneArgs = {
+  findOneInput: MatchFindOneInput;
+};
 
 
 export type QueryplayerFindManyArgs = {

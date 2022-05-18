@@ -15,6 +15,16 @@ type Query {
 type Player {
   uuid: String!
   name: String!
+  points: Int!
+  played: Int!
+  won: Int!
+  lost: Int!
+  for: Int!
+  against: Int!
+  matches1: [Match!]
+  matches2: [Match!]
+  createdAt: Date!
+  updatedAt: Date!
 }
 
 input PlayerCreateInput {
@@ -33,17 +43,26 @@ input PlayerFindManyInput {
 }
 
 input PlayerOrderByInput {
+  order: OrderByEnum
   name: OrderByEnum
+  points: OrderByEnum
 }
 
 input PlayerSearchFieldsInput {
   uuid: String
-  name: String
+  firstName: String
+  lastName: String
 }
 
 input PlayerUpdateInput {
   uuid: String!
-  name: String
+  pic: String
+  played: Int
+  points: Int
+  won: Int
+  lost: Int
+  for: Int
+  against: Int
 }
 
 input PlayerDeleteInput {

@@ -1,16 +1,22 @@
 fragment FPlayer on Player {
   uuid
   name
-}
-
-query PlayerFindMany($findManyInput: PlayerFindManyInput!) {
-  playerFindMany(findManyInput: $findManyInput) {
-    ...FPlayer
+  matches1 {
+    uuid
+  }
+  matches2 {
+    uuid
   }
 }
 
 query PlayerFindOne($findOneInput: PlayerFindOneInput!) {
-  playerFindOne(findOneInput: $findOneInput) {
+  playerOneMany(findOneInput: $findOneInput) {
+    ...FPlayer
+  }
+}
+
+query PlayerFindMany($findManyInput: PlayerFindManyInput!) {
+  playerFindMany(findManyInput: $findManyInput) {
     ...FPlayer
   }
 }

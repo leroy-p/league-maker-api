@@ -3,7 +3,16 @@ model PlayerEntity {
   uuid      String   @unique @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
-  name String
+  name      String
+  points    Int @default(0)
+  played    Int @default(0)
+  won       Int @default(0)
+  lost      Int @default(0)
+  for       Int @default(0)
+  against   Int @default(0)
+
+  matches1  MatchEntity[] @relation("player_matches1")
+  matches2  MatchEntity[] @relation("player_matches2")
 
   @@map("player")
 }

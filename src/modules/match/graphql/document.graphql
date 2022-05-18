@@ -1,0 +1,44 @@
+fragment FMatch on Match {
+  uuid
+  name
+  player1 {
+    uuid
+    name
+  }
+  player2 {
+    uuid
+    name
+  }
+}
+
+query MatchFindOne($findOneInput: MatchFindOneInput!) {
+  matchOneMany(findOneInput: $findOneInput) {
+    ...FMatch
+  }
+}
+
+query MatchFindMany($findManyInput: MatchFindManyInput!) {
+  matchFindMany(findManyInput: $findManyInput) {
+    ...FMatch
+  }
+}
+
+mutation MatchCreateOne($createInput: MatchCreateInput!) {
+  matchCreateOne(createInput: $createInput) {
+    ...FMatch
+  }
+}
+
+mutation MatchUpdateOne($updateInput: MatchUpdateInput!) {
+  matchUpdateOne(updateInput: $updateInput) {
+    ...FMatch
+  }
+}
+
+mutation MatchDeleteOne($deleteInput: MatchDeleteInput!) {
+  matchDeleteOne(deleteInput: $deleteInput)
+}
+
+mutation MatchDraw {
+  matchDraw
+}

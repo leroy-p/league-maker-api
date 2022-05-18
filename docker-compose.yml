@@ -3,7 +3,7 @@ services:
   # PostgreSQL
   postgres:
     image: 'postgres:13'
-    container_name: 'starter-api-server-postgres'
+    container_name: 'league-maker-api-server-postgres'
     volumes:
       - './local/docker/postgresql:/var/lib/postgresql/data'
     ports:
@@ -15,7 +15,7 @@ services:
   # Adminer
   adminer:
     image: 'adminer'
-    container_name: 'starter-api-server-adminer'
+    container_name: 'league-maker-api-server-adminer'
     links:
       - 'postgres:postgres'
     ports:
@@ -26,7 +26,7 @@ services:
   # MailHog
   mailhog:
     image: 'mailhog/mailhog'
-    container_name: 'starter-api-server-mailhog'
+    container_name: 'league-maker-api-server-mailhog'
     ports:
       - '587:1025'
       - '3011:8025'

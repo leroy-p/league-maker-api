@@ -22,14 +22,14 @@ export class PlayerResolver {
   playerFindOne(@Args('findOneInput') findOneInput: PlayerFindOneInput): Promise<Player | undefined> {
     const { where } = findOneInput
 
-    return this.ps.playerEntity.findFirst({ where })
+    return this.ps.playerEntity.findFirst({ where, include: { matches1: true, matches2: true } })
   }
 
   @Query()
   playerFindMany(@Args('findManyInput') findManyInput: PlayerFindManyInput): Promise<Player[]> {
     const { where } = findManyInput
 
-    return this.ps.playerEntity.findMany({ where })
+    return this.ps.playerEntity.findMany({ where, include: { matches1: true, matches2: true } })
   }
 
   @Mutation()

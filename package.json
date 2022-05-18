@@ -1,8 +1,8 @@
 {
-  "name": "nest-typescript-starter",
+  "name": "league-maker-api",
   "private": true,
   "version": "1.0.0",
-  "description": "Nest TypeScript starter repository",
+  "description": "League Maker API",
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",

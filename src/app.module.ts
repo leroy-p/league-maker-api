@@ -5,6 +5,7 @@ import { GraphQLOptions } from './graphql/options'
 import {
   PrismaModule,
   PlayerModule,
+  MatchModule,
 } from './modules'
 
 @Module({
@@ -12,6 +13,7 @@ import {
     forwardRef(() => GraphQLModule.forRoot(GraphQLOptions)),
     forwardRef(() => PrismaModule),
     forwardRef(() => PlayerModule),
+    forwardRef(() => MatchModule),
   ],
   providers: [],
 })
