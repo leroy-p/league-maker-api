@@ -21,28 +21,28 @@ export class PlayerService {
   }
 
   async create(createInput: PlayerCreateInput): Promise<PlayerEntity> {
-    const Player = await this.ps.playerEntity.create({
+    const player = await this.ps.playerEntity.create({
       data: {
         ...createInput,
       },
     })
 
-    return this.ps.playerEntity.findUnique({ where: { id: Player.id }, include: { matches1: true, matches2: true } })
+    return this.ps.playerEntity.findUnique({ where: { id: player.id }, include: { matches1: true, matches2: true } })
   }
 
   async update(updateInput: PlayerUpdateInput): Promise<PlayerEntity> {
     const { uuid, ...updateInputRest } = updateInput
 
-    const Player = await this.ps.playerEntity.findUnique({ where: { uuid }, rejectOnNotFound: true })
+    const player = await this.ps.playerEntity.findUnique({ where: { uuid }, rejectOnNotFound: true })
 
     await this.ps.playerEntity.update({
-      where: { id: Player.id },
+      where: { id: player.id },
       data: {
         ...updateInputRest,
       },
     })
 
-    return this.ps.playerEntity.findUnique({ where: { id: Player.id }, include: { matches1: true, matches2: true } })
+    return this.ps.playerEntity.findUnique({ where: { id: player.id }, include: { matches1: true, matches2: true } })
   }
 
   async delete(deleteInput: PlayerDeleteInput): Promise<boolean> {

@@ -8,6 +8,7 @@ model PlayerEntity {
   played    Int @default(0)
   won       Int @default(0)
   lost      Int @default(0)
+  drawed    Int @default(0)
   for       Int @default(0)
   against   Int @default(0)
 

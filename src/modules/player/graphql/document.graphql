@@ -7,6 +7,11 @@ fragment FPlayer on Player {
   matches2 {
     uuid
   }
+  won
+  loss
+  drawed
+  for
+  against
 }
 
 query PlayerFindOne($findOneInput: PlayerFindOneInput!) {

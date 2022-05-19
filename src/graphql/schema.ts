@@ -70,11 +70,19 @@ export interface MatchUpdateInput {
   uuid: Scalars['String'];
 }
 
+export interface MatchUpdateScoreInput {
+  score1: Scalars['Int'];
+  score2: Scalars['Int'];
+  uuid: Scalars['String'];
+}
+
 export interface Mutation {
   matchCreateOne: Match;
   matchDeleteOne: Scalars['Boolean'];
   matchDraw: Scalars['Boolean'];
   matchUpdateOne: Match;
+  matchUpdateScore: Match;
+  mockCreateDefault: Scalars['Boolean'];
   playerCreateOne: Player;
   playerDeleteOne: Scalars['Boolean'];
   playerUpdateOne: Player;
@@ -93,6 +101,11 @@ export type MutationmatchDeleteOneArgs = {
 
 export type MutationmatchUpdateOneArgs = {
   updateInput: MatchUpdateInput;
+};
+
+
+export type MutationmatchUpdateScoreArgs = {
+  input: MatchUpdateScoreInput;
 };
 
 
@@ -118,6 +131,7 @@ export enum OrderByEnum {
 export interface Player {
   against: Scalars['Int'];
   createdAt: Scalars['Date'];
+  drawed: Scalars['Int'];
   for: Scalars['Int'];
   lost: Scalars['Int'];
   matches1?: Maybe<Array<Match>>;
@@ -163,6 +177,7 @@ export interface PlayerSearchFieldsInput {
 
 export interface PlayerUpdateInput {
   against?: InputMaybe<Scalars['Int']>;
+  drawed?: InputMaybe<Scalars['Int']>;
   for?: InputMaybe<Scalars['Int']>;
   lost?: InputMaybe<Scalars['Int']>;
   pic?: InputMaybe<Scalars['String']>;

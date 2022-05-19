@@ -19,6 +19,7 @@ type Player {
   played: Int!
   won: Int!
   lost: Int!
+  drawed: Int!
   for: Int!
   against: Int!
   matches1: [Match!]
@@ -61,6 +62,7 @@ input PlayerUpdateInput {
   points: Int
   won: Int
   lost: Int
+  drawed: Int
   for: Int
   against: Int
 }

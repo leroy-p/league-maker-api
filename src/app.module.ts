@@ -6,6 +6,7 @@ import {
   PrismaModule,
   PlayerModule,
   MatchModule,
+  MockModule,
 } from './modules'
 
 @Module({
@@ -14,6 +15,7 @@ import {
     forwardRef(() => PrismaModule),
     forwardRef(() => PlayerModule),
     forwardRef(() => MatchModule),
+    forwardRef(() => MockModule),
   ],
   providers: [],
 })

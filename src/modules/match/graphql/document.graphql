@@ -42,3 +42,9 @@ mutation MatchDeleteOne($deleteInput: MatchDeleteInput!) {
 mutation MatchDraw {
   matchDraw
 }
+
+mutation MatchUpdateScore($input: MatchUpdateScoreInput!) {
+  matchUpdateScore(input: $input) {
+    ...FMatch
+  }
+}

@@ -6,6 +6,7 @@ type Mutation {
   matchUpdateOne(updateInput: MatchUpdateInput!): Match!
   matchDeleteOne(deleteInput: MatchDeleteInput!): Boolean!
   matchDraw: Boolean!
+  matchUpdateScore(input: MatchUpdateScoreInput!): Match!
 }
 
 type Query {
@@ -60,5 +61,11 @@ input MatchUpdateInput {
 
 input MatchDeleteInput {
   uuid: String!
+}
+
+input MatchUpdateScoreInput {
+  uuid: String!
+  score1: Int!
+  score2: Int!
 }
 `
