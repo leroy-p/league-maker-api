@@ -3,11 +3,12 @@ import { forwardRef, Inject } from '@nestjs/common'
 
 import {
   Match,
-  MatchCreateInput,
-  MatchDeleteInput,
   MatchFindManyInput,
   MatchFindOneInput,
+  MatchCreateInput,
   MatchUpdateInput,
+  MatchDeleteInput,
+  MatchUpdateScoreInput,
 } from '../../graphql/schema'
 import { PrismaService, MatchService } from '../../services'
 
@@ -38,17 +39,22 @@ export class MatchResolver {
   }
 
   @Mutation()
-  matchUpdateOne(@Args('updateInput') input: MatchUpdateInput): Promise<Match> {
-    return this.MatchService.update(input)
+  matchUpdateOne(@Args('updateInput') udpateInput: MatchUpdateInput): Promise<Match> {
+    return this.MatchService.update(udpateInput)
   }
 
   @Mutation()
-  matchDeleteOne(@Args('deleteInput') input: MatchDeleteInput): Promise<boolean> {
-    return this.MatchService.delete(input)
+  matchDeleteOne(@Args('deleteInput') deleteInput: MatchDeleteInput): Promise<boolean> {
+    return this.MatchService.delete(deleteInput)
   }
 
   @Mutation()
   matchDraw(): Promise<boolean> {
     return this.MatchService.draw()
+  }
+
+  @Mutation()
+  matchUpdateScore(@Args('input') input: MatchUpdateScoreInput): Promise<Match> {
+    return this.MatchService.updateScore(input)
   }
 }

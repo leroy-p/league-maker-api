@@ -7,6 +7,7 @@ import {
   PlayerDeleteInput,
   PlayerFindManyInput,
   PlayerFindOneInput,
+  PlayerForLeaderboard,
   PlayerUpdateInput,
 } from '../../graphql/schema'
 import { PrismaService, PlayerService } from '../../services'
@@ -30,6 +31,11 @@ export class PlayerResolver {
     const { where } = findManyInput
 
     return this.ps.playerEntity.findMany({ where, include: { matches1: true, matches2: true } })
+  }
+
+  @Query()
+  playerGetLeaderboard(): Promise<PlayerForLeaderboard[]> {
+    return this.PlayerService.getLeaderboard()
   }
 
   @Mutation()

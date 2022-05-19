@@ -10,6 +10,7 @@ type Mutation {
 type Query {
   playerFindOne(findOneInput: PlayerFindOneInput!): Player
   playerFindMany(findManyInput: PlayerFindManyInput!): [Player]!
+  playerGetLeaderboard: [PlayerForLeaderboard!]!
 }
 
 type Player {
@@ -26,6 +27,20 @@ type Player {
   matches2: [Match!]
   createdAt: Date!
   updatedAt: Date!
+}
+
+type PlayerForLeaderboard {
+  uuid: String!
+  name: String!
+  points: Int!
+  played: Int!
+  won: Int!
+  lost: Int!
+  drawed: Int!
+  for: Int!
+  against: Int!
+  diff: Int!
+  streak: [GameResult!]!
 }
 
 input PlayerCreateInput {
@@ -69,5 +84,11 @@ input PlayerUpdateInput {
 
 input PlayerDeleteInput {
   uuid: String!
+}
+
+enum GameResult {
+  WON
+  LOST
+  DRAWED
 }
 `

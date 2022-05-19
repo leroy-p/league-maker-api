@@ -16,6 +16,12 @@ export type Scalars = {
   Date: any;
 };
 
+export enum GameResult {
+  DRAWED = 'DRAWED',
+  LOST = 'LOST',
+  WON = 'WON'
+}
+
 export enum LanguageCode {
   en = 'en',
   fr = 'fr'
@@ -163,6 +169,20 @@ export interface PlayerFindOneInput {
   where?: InputMaybe<PlayerSearchFieldsInput>;
 }
 
+export interface PlayerForLeaderboard {
+  against: Scalars['Int'];
+  diff: Scalars['Int'];
+  drawed: Scalars['Int'];
+  for: Scalars['Int'];
+  lost: Scalars['Int'];
+  name: Scalars['String'];
+  played: Scalars['Int'];
+  points: Scalars['Int'];
+  streak: Array<GameResult>;
+  uuid: Scalars['String'];
+  won: Scalars['Int'];
+}
+
 export interface PlayerOrderByInput {
   name?: InputMaybe<OrderByEnum>;
   order?: InputMaybe<OrderByEnum>;
@@ -192,6 +212,7 @@ export interface Query {
   matchFindOne?: Maybe<Match>;
   playerFindMany: Array<Maybe<Player>>;
   playerFindOne?: Maybe<Player>;
+  playerGetLeaderboard: Array<PlayerForLeaderboard>;
 }
 
 
