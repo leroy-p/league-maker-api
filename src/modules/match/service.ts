@@ -23,11 +23,11 @@ export class MatchService {
     const matches = []
 
     for (const match of result) {
-      if (!matches[match.round]) {
+      if (!matches[match.round - 1]) {
         matches.push([])
       }
 
-      matches[match.round]?.push({
+      matches[match.round - 1]?.push({
         ...match,
         player1: {
           ...match.player1,
