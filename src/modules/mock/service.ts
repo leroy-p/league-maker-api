@@ -1,22 +1,17 @@
-import shell from 'shelljs'
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common'
+import { forwardRef, Inject, Injectable } from '@nestjs/common'
 
-import { PrismaService, PlayerService, MatchService } from '../../services'
-import { env } from '../../env'
+import { PrismaService, MatchService } from '../../services'
 import { defaultPlayers } from './data/players'
 
 @Injectable()
-export class MockService {
-  private logger: Logger
-  
+export class MockService {  
   constructor(
     @Inject(forwardRef(() => PrismaService)) private readonly ps: PrismaService,
-    @Inject(forwardRef(() => PlayerService)) private readonly playerService: PlayerService,
     @Inject(forwardRef(() => MatchService)) private readonly matchService: MatchService
   ) {}
 
   async createDefault(): Promise<boolean> {    
-    await Promise.all(defaultPlayers.map((createInput) => this.playerService.create({ ...createInput })))
+    await Promise.all(defaultPlayers.map((createInput) => this.ps.playerEntity.create({ data: { ...createInput } })))
 
     return await this.matchService.draw()
   }

@@ -1,6 +1,4 @@
-import { PlayerCreateInput } from "src/graphql/schema";
-
-export const defaultPlayers: PlayerCreateInput[] = [
+export const defaultPlayers = [
   {
     name: 'Paris-SG',
   },

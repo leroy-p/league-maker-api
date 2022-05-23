@@ -1,5 +1,6 @@
 schema:
   - 'src/graphql/type-definitions.ts'
+documents: 'src/**/document.graphql'
 generates:
   src/graphql/schema.ts:
     plugins:

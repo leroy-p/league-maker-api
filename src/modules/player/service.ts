@@ -1,13 +1,8 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common'
-import { PlayerEntity } from '@prisma/client'
+import { MatchEntity, PlayerEntity } from '@prisma/client'
 import * as moment from 'moment'
 
-import {
-  PlayerCreateInput,
-  PlayerUpdateInput,
-  PlayerDeleteInput,
-  PlayerForLeaderboard, GameResult, Player, Match
-} from '../../graphql/schema'
+import { GameResult, Player, Match, PlayerFindOneInput } from '../../graphql/schema'
 import { PrismaService } from '../../services'
 
 @Injectable()
@@ -16,68 +11,41 @@ export class PlayerService {
     @Inject(forwardRef(() => PrismaService)) private readonly ps: PrismaService
   ) {}
 
-  async findAll(): Promise<PlayerEntity[]> {
-    return this.ps.playerEntity.findMany({ include: { matches1: true, matches2: true } })
+  async findOne(input: PlayerFindOneInput): Promise<Player> {
+    const player = await this.ps.playerEntity.findFirst({
+      ...input,
+      include: {
+        matches1: { include: { player1: true, player2: true }},
+        matches2: { include: { player1: true, player2: true }},
+      }
+    })
+
+    return {
+      ...player,
+      diff: player.for - player.against,
+      rank: await this.getRankAsync(player),
+      streak: this.getStreak(player),
+      matches: player.matches1.concat(player.matches2).sort((a, b) => a.round - b.round),
+    }
   }
 
-  async getLeaderboard(): Promise<PlayerForLeaderboard[]> {
+  async getLeaderboard(): Promise<Player[]> {
     const players = await this.ps.playerEntity.findMany({ 
       orderBy: { points: 'desc' },
       include: { matches1: true, matches2: true }
     })
+    const sortedPlayers = players.sort((a, b) => this.sortPlayers(a, b))
 
-    const sortedPlayers = players.sort((a, b) => {
-      if (a.points !== b.points) return b.points - a.points
-      if ((a.for - a.against) - (b.for - b.against) > 0) return -1
-      if ((a.for - a.against) - (b.for - b.against) < 0) return 1
-
-      return b.for - a.for
-    })
-
-    return sortedPlayers.map((player) => {
-      const matches = player.matches1.concat(player.matches2)
-
-      return {
+    return sortedPlayers.map((player) => ({
         ...player,
         diff: player.for - player.against,
+        rank: this.getRank(player, sortedPlayers),
         streak: this.getStreak(player),
-    }})
+        matches: [],
+    }))
   }
 
-  async create(createInput: PlayerCreateInput): Promise<PlayerEntity> {
-    const player = await this.ps.playerEntity.create({
-      data: {
-        ...createInput,
-      },
-    })
-
-    return this.ps.playerEntity.findUnique({ where: { id: player.id }, include: { matches1: true, matches2: true } })
-  }
-
-  async update(updateInput: PlayerUpdateInput): Promise<PlayerEntity> {
-    const { uuid, ...updateInputRest } = updateInput
-
-    const player = await this.ps.playerEntity.findUnique({ where: { uuid }, rejectOnNotFound: true })
-
-    await this.ps.playerEntity.update({
-      where: { id: player.id },
-      data: {
-        ...updateInputRest,
-      },
-    })
-
-    return this.ps.playerEntity.findUnique({ where: { id: player.id }, include: { matches1: true, matches2: true } })
-  }
-
-  async delete(deleteInput: PlayerDeleteInput): Promise<boolean> {
-    const { uuid } = deleteInput
-
-    await this.ps.playerEntity.delete({ where: { uuid } })
-
-    return true
-  }
-
-  private getStreak(player: Player): GameResult[] {
+  private getStreak(player: PlayerEntity & { matches1?: MatchEntity[]; matches2?: MatchEntity[] }): GameResult[] {
     const { matches1, matches2 } = player
 
     function matchToResult(
@@ -95,11 +63,56 @@ export class PlayerService {
     const result2: { result: GameResult, date: string }[] =
       matches2.filter((match) => match.score1 !== null && match.score2 !== null).map((match) => matchToResult(match, false))
 
-    return result1.concat(result2).sort((a, b) => {
-      if (moment(a.date).isAfter(b.date)) return -1
-      if (moment(a.date).isBefore(b.date)) return 1
+    return result1.concat(result2).sort((a, b) => this.sortMatches(a.date, b.date)).map(({ result }) => result).slice(0, 5)
+  }
 
-      return 0
-    }).map(({ result }) => result).slice(0, 5)
+  private async getRankAsync(player: PlayerEntity & { matches1?: MatchEntity[]; matches2?: MatchEntity[] }): Promise<number> {
+    const players = await this.ps.playerEntity.findMany({ 
+      orderBy: { points: 'desc' },
+      include: { matches1: true, matches2: true }
+    })
+    const sortedPlayers = players.sort((a, b) => this.sortPlayers(a, b))
+
+    return this.getRank(player, sortedPlayers)
+  }
+
+  sortPlayers(
+    a: PlayerEntity & { matches1: MatchEntity[]; matches2: MatchEntity[] },
+    b: PlayerEntity & { matches1: MatchEntity[]; matches2: MatchEntity[] }
+  ): number {
+    if (a.points !== b.points) return b.points - a.points
+    if ((a.for - a.against) - (b.for - b.against) > 0) return -1
+    if ((a.for - a.against) - (b.for - b.against) < 0) return 1
+
+    return b.for - a.for
+  }
+
+  private sortMatches(dateA: string, dateB: string): number {
+    if (moment(dateA).isAfter(dateB)) return -1
+    if (moment(dateA).isBefore(dateB)) return 1
+
+    return 0
+  }
+
+
+  getRank(
+    player: PlayerEntity & { matches1?: MatchEntity[]; matches2?: MatchEntity[] },
+    sortedPlayers: Array<PlayerEntity & { matches1: MatchEntity[]; matches2: MatchEntity[] }>
+  ): number {
+    let rank = 1
+
+    for (let i = 0; i < sortedPlayers.length; i++) {
+      if (sortedPlayers[i].uuid === player.uuid) return rank
+
+      if (i === sortedPlayers.length - 1 ||
+        sortedPlayers[i].points !==  sortedPlayers[i + 1].points ||
+        sortedPlayers[i].for - sortedPlayers[i].against !== sortedPlayers[i + 1].for - sortedPlayers[i + 1].against ||
+        sortedPlayers[i].for !==  sortedPlayers[i + 1].for
+      ) {
+        rank +=1
+      }
+    }
+
+    return 0
   }
 }

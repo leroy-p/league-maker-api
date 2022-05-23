@@ -1,13 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common'
-import { MatchEntity } from '@prisma/client'
 
-import {
-  MatchCreateInput,
-  MatchUpdateInput,
-  MatchDeleteInput,
-  MatchUpdateScoreInput,
-  PlayerUpdateInput,
-} from '../../graphql/schema'
+import { Match, MatchUpdateScoreInput } from '../../graphql/schema'
 import { PrismaService, PlayerService } from '../../services'
 
 @Injectable()
@@ -17,45 +10,45 @@ export class MatchService {
     @Inject(forwardRef(() => PlayerService)) private readonly playerService: PlayerService
   ) {}
 
-  async create(createInput: MatchCreateInput): Promise<MatchEntity> {
-    const match = await this.ps.matchEntity.create({
-      data: {
-        ...createInput,
-      },
+  async getCalendar(): Promise<Match[][]> {
+    const players = await this.ps.playerEntity.findMany({ 
+      orderBy: { points: 'desc' },
+      include: { matches1: true, matches2: true }
     })
-
-    return this.ps.matchEntity.findUnique({ where: { id: match.id }, include: { player1: true, player2: true } })
-  }
-
-  async update(updateInput: MatchUpdateInput): Promise<MatchEntity> {
-    const { uuid, ...updateInputRest } = updateInput
-
-    const match = await this.ps.matchEntity.findUnique({ where: { uuid }, rejectOnNotFound: true })
-
-    await this.ps.matchEntity.update({
-      where: { id: match.id },
-      data: {
-        ...updateInputRest,
-      },
+    const sortedPlayers = players.sort((a, b) => this.playerService.sortPlayers(a, b))
+    const result = await this.ps.matchEntity.findMany({
+      orderBy: { round: 'asc' },
+      include: { player1: true, player2: true }
     })
+    const matches = []
 
-    return this.ps.matchEntity.findUnique({ where: { id: match.id }, include: { player1: true, player2: true } })
-  }
+    for (const match of result) {
+      if (!matches[match.round]) {
+        matches.push([])
+      }
 
-  async delete(deleteInput: MatchDeleteInput): Promise<boolean> {
-    const { uuid } = deleteInput
+      matches[match.round]?.push({
+        ...match,
+        player1: {
+          ...match.player1,
+          rank: this.playerService.getRank(match.player1, sortedPlayers),
+        },
+        player2: {
+          ...match.player2,
+          rank: this.playerService.getRank(match.player2, sortedPlayers),
+        },
+      })
+    }
 
-    await this.ps.matchEntity.delete({ where: { uuid } })
-
-    return true
+    return matches
   }
 
   async draw(): Promise<boolean> {
-    const players = await this.playerService.findAll()
+    const players = await this.ps.playerEntity.findMany({ include: { matches1: true, matches2: true } })
     const shufledPlayers = players.sort((a, b) => 0.5 - Math.random())
     const resultedPlayers = shufledPlayers.length % 2 === 1 ? [...shufledPlayers, null] : [...shufledPlayers]
     const n = resultedPlayers.length
-    const matchCreateInputs: MatchCreateInput[] = []
+    const matchCreateInputs = []
 
     for (let i = 0; i < resultedPlayers.length - 1; i++) {
       for (let j = 0; j < resultedPlayers.length / 2; j++) {
@@ -91,12 +84,14 @@ export class MatchService {
       }
     }
 
-    await Promise.all(matchCreateInputs.map((createInput) => this.create(createInput)))
+    await Promise.all(matchCreateInputs.map((createInput) => (
+      this.ps.matchEntity.create({ data: { ...createInput } })
+    )))
 
     return true
   }
 
-  async updateScore(input: MatchUpdateScoreInput) {
+  async updateScore(input: MatchUpdateScoreInput): Promise<boolean> {
     const { uuid, score1, score2 } = input
     const match = await this.ps.matchEntity.findUnique({ where: { uuid }, include: { player1: true, player2: true } })
     const { player1, player2, score1: oldScore1, score2: oldScore2 } = match
@@ -109,7 +104,7 @@ export class MatchService {
     const hasPlayer1Lost = score1 < score2 ? 1 : 0
     const hasPlayer1Drawed = score1 === score2 ? 1 : 0
 
-    const playerInput1: PlayerUpdateInput = {
+    const playerInput1 = {
       uuid: player1.uuid,
       played: oldScore1 !== null && oldScore2 !== null ? player1.played : player1.played + 1,
       points: player1.points - hadPlayer1Won * 3 - hadPlayer1Drawed + hasPlayer1Won * 3 + hasPlayer1Drawed,
@@ -120,7 +115,7 @@ export class MatchService {
       against: oldScore1 !== null && oldScore2 !== null ? player1.against - oldScore2 + score2 : player1.against + score2,
     }
 
-    const playerInput2: PlayerUpdateInput = {
+    const playerInput2 = {
       uuid: player2.uuid,
       played: oldScore1 !== null && oldScore2 !== null ? player2.played : player2.played + 1,
       points: player2.points - hadPlayer1Lost * 3 - hadPlayer1Drawed + hasPlayer1Lost * 3 + hasPlayer1Drawed,
@@ -131,11 +126,10 @@ export class MatchService {
       against: oldScore1 !== null && oldScore2 !== null ? player2.against - oldScore1 + score1 : player2.against + score1,
     }
 
-    await this.playerService.update(playerInput1)
-    await this.playerService.update(playerInput2)
-
+    await this.ps.playerEntity.update({ where: { uuid: playerInput1.uuid }, data: { ...playerInput1 } })
+    await this.ps.playerEntity.update({ where: { uuid: playerInput2.uuid }, data: { ...playerInput2 } })
     await this.ps.matchEntity.update({ where: { uuid }, data: { score1, score2 } })
 
-    return this.ps.matchEntity.findUnique({ where: { uuid }, include: { player1: true, player2: true } })
+    return true
   }
 }

@@ -1,46 +1,23 @@
 fragment FMatch on Match {
   uuid
-  name
   player1 {
     uuid
     name
+    rank
   }
   player2 {
     uuid
     name
+    rank
   }
+  score1
+  score2
 }
 
-query MatchFindOne($findOneInput: MatchFindOneInput!) {
-  matchOneMany(findOneInput: $findOneInput) {
+query MatchGetCalendar {
+  matchGetCalendar {
     ...FMatch
   }
-}
-
-query MatchFindMany($findManyInput: MatchFindManyInput!) {
-  matchFindMany(findManyInput: $findManyInput) {
-    ...FMatch
-  }
-}
-
-mutation MatchCreateOne($createInput: MatchCreateInput!) {
-  matchCreateOne(createInput: $createInput) {
-    ...FMatch
-  }
-}
-
-mutation MatchUpdateOne($updateInput: MatchUpdateInput!) {
-  matchUpdateOne(updateInput: $updateInput) {
-    ...FMatch
-  }
-}
-
-mutation MatchDeleteOne($deleteInput: MatchDeleteInput!) {
-  matchDeleteOne(deleteInput: $deleteInput)
-}
-
-mutation MatchDraw {
-  matchDraw
 }
 
 mutation MatchUpdateScore($input: MatchUpdateScoreInput!) {
