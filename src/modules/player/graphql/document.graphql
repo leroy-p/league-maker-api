@@ -2,6 +2,7 @@ fragment FPlayer on Player {
   uuid
   name
   points
+  rank
   played
   won
   lost
@@ -15,10 +16,12 @@ fragment FPlayer on Player {
     player1 {
       uuid
       name
+      rank
     }
     player2 {
       uuid
       name
+      rank
     }
     score1
     score2
@@ -29,6 +32,7 @@ fragment FPlayerForLeaderboard on Player {
   uuid
   name
   points
+  rank
   played
   won
   lost

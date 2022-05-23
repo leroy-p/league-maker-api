@@ -18,7 +18,7 @@ type Player {
   against: Int!
   diff: Int
   rank: Int
-  streak: [GameResult!]
+  streak: [MatchResult!]
   matches: [Match!]
 }
 
@@ -30,7 +30,7 @@ input PlayerSearchFieldsInput {
   uuid: String
 }
 
-enum GameResult {
+enum MatchResult {
   WON
   LOST
   DRAWED

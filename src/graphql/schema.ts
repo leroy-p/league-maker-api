@@ -16,12 +16,6 @@ export type Scalars = {
   Date: any;
 };
 
-export enum GameResult {
-  DRAWED = 'DRAWED',
-  LOST = 'LOST',
-  WON = 'WON'
-}
-
 export enum LanguageCode {
   en = 'en',
   fr = 'fr'
@@ -35,6 +29,12 @@ export interface Match {
   score2?: Maybe<Scalars['Int']>;
   updatedAt: Scalars['Date'];
   uuid: Scalars['String'];
+}
+
+export enum MatchResult {
+  DRAWED = 'DRAWED',
+  LOST = 'LOST',
+  WON = 'WON'
 }
 
 export interface MatchUpdateScoreInput {
@@ -69,7 +69,7 @@ export interface Player {
   played: Scalars['Int'];
   points: Scalars['Int'];
   rank?: Maybe<Scalars['Int']>;
-  streak?: Maybe<Array<GameResult>>;
+  streak?: Maybe<Array<MatchResult>>;
   uuid: Scalars['String'];
   won: Scalars['Int'];
 }
@@ -112,21 +112,21 @@ export type MockCreateDefaultMutationVariables = Exact<{ [key: string]: never; }
 
 export type MockCreateDefaultMutation = { mockCreateDefault: boolean };
 
-export type FPlayerFragment = { uuid: string, name: string, points: number, played: number, won: number, lost: number, drawed: number, for: number, against: number, diff?: number | null | undefined, streak?: Array<GameResult> | null | undefined, matches?: Array<{ uuid: string, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string } | null | undefined, player2?: { uuid: string, name: string } | null | undefined }> | null | undefined };
+export type FPlayerFragment = { uuid: string, name: string, points: number, rank?: number | null | undefined, played: number, won: number, lost: number, drawed: number, for: number, against: number, diff?: number | null | undefined, streak?: Array<MatchResult> | null | undefined, matches?: Array<{ uuid: string, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined, player2?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined }> | null | undefined };
 
-export type FPlayerForLeaderboardFragment = { uuid: string, name: string, points: number, played: number, won: number, lost: number, drawed: number, for: number, against: number, diff?: number | null | undefined, streak?: Array<GameResult> | null | undefined };
+export type FPlayerForLeaderboardFragment = { uuid: string, name: string, points: number, rank?: number | null | undefined, played: number, won: number, lost: number, drawed: number, for: number, against: number, diff?: number | null | undefined, streak?: Array<MatchResult> | null | undefined };
 
 export type PlayerFindOneQueryVariables = Exact<{
   input: PlayerFindOneInput;
 }>;
 
 
-export type PlayerFindOneQuery = { playerFindOne?: { uuid: string, name: string, points: number, played: number, won: number, lost: number, drawed: number, for: number, against: number, diff?: number | null | undefined, streak?: Array<GameResult> | null | undefined, matches?: Array<{ uuid: string, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string } | null | undefined, player2?: { uuid: string, name: string } | null | undefined }> | null | undefined } | null | undefined };
+export type PlayerFindOneQuery = { playerFindOne?: { uuid: string, name: string, points: number, rank?: number | null | undefined, played: number, won: number, lost: number, drawed: number, for: number, against: number, diff?: number | null | undefined, streak?: Array<MatchResult> | null | undefined, matches?: Array<{ uuid: string, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined, player2?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined }> | null | undefined } | null | undefined };
 
 export type PlayerGetLeaderboardQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PlayerGetLeaderboardQuery = { playerGetLeaderboard: Array<{ uuid: string, name: string, points: number, played: number, won: number, lost: number, drawed: number, for: number, against: number, diff?: number | null | undefined, streak?: Array<GameResult> | null | undefined }> };
+export type PlayerGetLeaderboardQuery = { playerGetLeaderboard: Array<{ uuid: string, name: string, points: number, rank?: number | null | undefined, played: number, won: number, lost: number, drawed: number, for: number, against: number, diff?: number | null | undefined, streak?: Array<MatchResult> | null | undefined }> };
 
 export const FMatchFragmentDoc = gql`
     fragment FMatch on Match {
@@ -150,6 +150,7 @@ export const FPlayerFragmentDoc = gql`
   uuid
   name
   points
+  rank
   played
   won
   lost
@@ -163,10 +164,12 @@ export const FPlayerFragmentDoc = gql`
     player1 {
       uuid
       name
+      rank
     }
     player2 {
       uuid
       name
+      rank
     }
     score1
     score2
@@ -178,6 +181,7 @@ export const FPlayerForLeaderboardFragmentDoc = gql`
   uuid
   name
   points
+  rank
   played
   won
   lost
