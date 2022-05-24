@@ -13,6 +13,7 @@ fragment FPlayer on Player {
   streak
   matches {
     uuid
+    round
     player1 {
       uuid
       name

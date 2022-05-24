@@ -1,5 +1,6 @@
 fragment FMatch on Match {
   uuid
+  round
   player1 {
     uuid
     name
@@ -21,7 +22,5 @@ query MatchGetCalendar {
 }
 
 mutation MatchUpdateScore($input: MatchUpdateScoreInput!) {
-  matchUpdateScore(input: $input) {
-    ...FMatch
-  }
+  matchUpdateScore(input: $input)
 }

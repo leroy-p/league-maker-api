@@ -44,7 +44,7 @@ export interface MatchUpdateScoreInput {
 }
 
 export interface Mutation {
-  matchUpdateScore: Match;
+  matchUpdateScore: Scalars['Boolean'];
   mockCreateDefault: Scalars['Boolean'];
 }
 
@@ -93,26 +93,26 @@ export type QueryplayerFindOneArgs = {
   input: PlayerFindOneInput;
 };
 
-export type FMatchFragment = { uuid: string, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined, player2?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined };
+export type FMatchFragment = { uuid: string, round: number, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined, player2?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined };
 
 export type MatchGetCalendarQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MatchGetCalendarQuery = { matchGetCalendar: Array<Array<{ uuid: string, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined, player2?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined }>> };
+export type MatchGetCalendarQuery = { matchGetCalendar: Array<Array<{ uuid: string, round: number, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined, player2?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined }>> };
 
 export type MatchUpdateScoreMutationVariables = Exact<{
   input: MatchUpdateScoreInput;
 }>;
 
 
-export type MatchUpdateScoreMutation = { matchUpdateScore: { uuid: string, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined, player2?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined } };
+export type MatchUpdateScoreMutation = { matchUpdateScore: boolean };
 
 export type MockCreateDefaultMutationVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MockCreateDefaultMutation = { mockCreateDefault: boolean };
 
-export type FPlayerFragment = { uuid: string, name: string, points: number, rank?: number | null | undefined, played: number, won: number, lost: number, drawed: number, for: number, against: number, diff?: number | null | undefined, streak?: Array<MatchResult> | null | undefined, matches?: Array<{ uuid: string, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined, player2?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined }> | null | undefined };
+export type FPlayerFragment = { uuid: string, name: string, points: number, rank?: number | null | undefined, played: number, won: number, lost: number, drawed: number, for: number, against: number, diff?: number | null | undefined, streak?: Array<MatchResult> | null | undefined, matches?: Array<{ uuid: string, round: number, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined, player2?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined }> | null | undefined };
 
 export type FPlayerForLeaderboardFragment = { uuid: string, name: string, points: number, rank?: number | null | undefined, played: number, won: number, lost: number, drawed: number, for: number, against: number, diff?: number | null | undefined, streak?: Array<MatchResult> | null | undefined };
 
@@ -121,7 +121,7 @@ export type PlayerFindOneQueryVariables = Exact<{
 }>;
 
 
-export type PlayerFindOneQuery = { playerFindOne?: { uuid: string, name: string, points: number, rank?: number | null | undefined, played: number, won: number, lost: number, drawed: number, for: number, against: number, diff?: number | null | undefined, streak?: Array<MatchResult> | null | undefined, matches?: Array<{ uuid: string, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined, player2?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined }> | null | undefined } | null | undefined };
+export type PlayerFindOneQuery = { playerFindOne?: { uuid: string, name: string, points: number, rank?: number | null | undefined, played: number, won: number, lost: number, drawed: number, for: number, against: number, diff?: number | null | undefined, streak?: Array<MatchResult> | null | undefined, matches?: Array<{ uuid: string, round: number, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined, player2?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined }> | null | undefined } | null | undefined };
 
 export type PlayerGetLeaderboardQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -131,6 +131,7 @@ export type PlayerGetLeaderboardQuery = { playerGetLeaderboard: Array<{ uuid: st
 export const FMatchFragmentDoc = gql`
     fragment FMatch on Match {
   uuid
+  round
   player1 {
     uuid
     name
@@ -161,6 +162,7 @@ export const FPlayerFragmentDoc = gql`
   streak
   matches {
     uuid
+    round
     player1 {
       uuid
       name
@@ -201,11 +203,9 @@ export const MatchGetCalendarDocument = gql`
     ${FMatchFragmentDoc}`;
 export const MatchUpdateScoreDocument = gql`
     mutation MatchUpdateScore($input: MatchUpdateScoreInput!) {
-  matchUpdateScore(input: $input) {
-    ...FMatch
-  }
+  matchUpdateScore(input: $input)
 }
-    ${FMatchFragmentDoc}`;
+    `;
 export const MockCreateDefaultDocument = gql`
     mutation MockCreateDefault {
   mockCreateDefault

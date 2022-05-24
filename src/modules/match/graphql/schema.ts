@@ -2,7 +2,7 @@ export default `#graphql
 scalar Date
 
 type Mutation {
-  matchUpdateScore(input: MatchUpdateScoreInput!): Match!
+  matchUpdateScore(input: MatchUpdateScoreInput!): Boolean!
 }
 
 type Query {

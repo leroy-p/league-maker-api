@@ -1,6 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common'
 import { MatchEntity, PlayerEntity } from '@prisma/client'
-import * as moment from 'moment'
 
 import { MatchResult, Player, Match, PlayerFindOneInput } from '../../graphql/schema'
 import { PrismaService } from '../../services'
@@ -77,19 +76,18 @@ export class PlayerService {
     function matchToResult(
       match: Match,
       isPlayer1: boolean
-    ): { result: MatchResult, date: string } {
-      if (match.score1 < match.score2) return { result: isPlayer1 ? MatchResult.LOST : MatchResult.WON, date: match.updatedAt }
-      if (match.score1 > match.score2) return { result: isPlayer1 ? MatchResult.WON : MatchResult.LOST, date: match.updatedAt }
+    ): { result: MatchResult, round: number } {
+      if (match.score1 < match.score2) return { result: isPlayer1 ? MatchResult.LOST : MatchResult.WON, round: match.round }
+      if (match.score1 > match.score2) return { result: isPlayer1 ? MatchResult.WON : MatchResult.LOST, round: match.round }
 
-      return { result: MatchResult.DRAWED, date: match.updatedAt }
+      return { result: MatchResult.DRAWED, round: match.round }
     }
 
-    const result1: { result: MatchResult, date: string }[] = 
-      matches1.filter((match) => match.score1 !== null && match.score2 !== null).map((match) => matchToResult(match, true))
-    const result2: { result: MatchResult, date: string }[] =
-      matches2.filter((match) => match.score1 !== null && match.score2 !== null).map((match) => matchToResult(match, false))
-
-    return result1.concat(result2).sort((a, b) => this.sortMatches(a.date, b.date)).map(({ result }) => result).slice(0, 5)
+    const result1 = matches1.filter((match) => match.score1 !== null && match.score2 !== null).map((match) => matchToResult(match, true))
+    const result2 = matches2.filter((match) => match.score1 !== null && match.score2 !== null).map((match) => matchToResult(match, false))
+    const sortedResults = result1.concat(result2).sort((a, b) => b.round - a.round).slice(0, 5)
+  
+    return sortedResults.map(({ result }) => result).reverse()
   }
 
   sortPlayers(
@@ -102,14 +100,6 @@ export class PlayerService {
 
     return b.for - a.for
   }
-
-  private sortMatches(dateA: string, dateB: string): number {
-    if (moment(dateA).isAfter(dateB)) return -1
-    if (moment(dateA).isBefore(dateB)) return 1
-
-    return 0
-  }
-
 
   getRank(
     player: PlayerEntity & { matches1?: MatchEntity[]; matches2?: MatchEntity[] },
