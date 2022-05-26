@@ -83,7 +83,7 @@ export interface PlayerSearchFieldsInput {
 }
 
 export interface Query {
-  matchGetCalendar: Array<Array<Match>>;
+  matchGetResults: Array<Array<Match>>;
   playerFindOne?: Maybe<Player>;
   playerGetLeaderboard: Array<Player>;
 }
@@ -95,10 +95,10 @@ export type QueryplayerFindOneArgs = {
 
 export type FMatchFragment = { uuid: string, round: number, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined, player2?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined };
 
-export type MatchGetCalendarQueryVariables = Exact<{ [key: string]: never; }>;
+export type MatchGetResultsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MatchGetCalendarQuery = { matchGetCalendar: Array<Array<{ uuid: string, round: number, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined, player2?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined }>> };
+export type MatchGetResultsQuery = { matchGetResults: Array<Array<{ uuid: string, round: number, score1?: number | null | undefined, score2?: number | null | undefined, player1?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined, player2?: { uuid: string, name: string, rank?: number | null | undefined } | null | undefined }>> };
 
 export type MatchUpdateScoreMutationVariables = Exact<{
   input: MatchUpdateScoreInput;
@@ -194,9 +194,9 @@ export const FPlayerForLeaderboardFragmentDoc = gql`
   streak
 }
     `;
-export const MatchGetCalendarDocument = gql`
-    query MatchGetCalendar {
-  matchGetCalendar {
+export const MatchGetResultsDocument = gql`
+    query MatchGetResults {
+  matchGetResults {
     ...FMatch
   }
 }
@@ -233,8 +233,8 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName) => action();
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    MatchGetCalendar(variables?: MatchGetCalendarQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<MatchGetCalendarQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<MatchGetCalendarQuery>(MatchGetCalendarDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MatchGetCalendar');
+    MatchGetResults(variables?: MatchGetResultsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<MatchGetResultsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<MatchGetResultsQuery>(MatchGetResultsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MatchGetResults');
     },
     MatchUpdateScore(variables: MatchUpdateScoreMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<MatchUpdateScoreMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<MatchUpdateScoreMutation>(MatchUpdateScoreDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MatchUpdateScore');

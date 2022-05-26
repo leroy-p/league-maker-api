@@ -33,7 +33,7 @@ export const defaultPlayers = [
     name: 'Lens',
   },
   {
-    name: 'Starsbourg',
+    name: 'Strasbourg',
   },
   {
     name: 'Montpellier',

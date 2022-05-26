@@ -10,7 +10,7 @@ export class MatchService {
     @Inject(forwardRef(() => PlayerService)) private readonly playerService: PlayerService
   ) {}
 
-  async getCalendar(): Promise<Match[][]> {
+  async getResults(): Promise<Match[][]> {
     const players = await this.ps.playerEntity.findMany({ 
       orderBy: { points: 'desc' },
       include: { matches1: true, matches2: true }

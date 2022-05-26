@@ -6,7 +6,7 @@ type Mutation {
 }
 
 type Query {
-  matchGetCalendar: [[Match!]!]!
+  matchGetResults: [[Match!]!]!
 }
 
 type Match {

@@ -11,8 +11,8 @@ export class MatchResolver {
   ) {}
 
   @Query()
-  matchGetCalendar(): Promise<Match[][]> {
-    return this.MatchService.getCalendar()
+  matchGetResults(): Promise<Match[][]> {
+    return this.MatchService.getResults()
   }
 
   @Mutation()

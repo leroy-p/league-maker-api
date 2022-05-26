@@ -15,8 +15,8 @@ fragment FMatch on Match {
   score2
 }
 
-query MatchGetCalendar {
-  matchGetCalendar {
+query MatchGetResults {
+  matchGetResults {
     ...FMatch
   }
 }
